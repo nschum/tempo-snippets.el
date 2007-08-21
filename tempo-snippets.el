@@ -72,6 +72,7 @@
 ;; 2007-08-21 (0.1.1)
 ;;    Fixed documentation.
 ;;    Prevented crash when form returns nil.
+;;    Added `tempo-snippets-grow-in-front' option.
 ;;
 ;; 2007-08-21 (0.1)
 ;;    Initial release.
@@ -110,6 +111,12 @@
   "*Insert prompts for snippets.
 If this variable is nil, snippets work just like ordinary tempo-templates with
 tempo-interactive set to nil."
+  :group 'tempo-snippets
+  :type '(choice (const :tag "Off" nil)
+                 (const :tag "On" t)))
+
+(defcustom tempo-snippets-grow-in-front nil
+  "*If this is set, inserting text in front of a field will cause it to grow."
   :group 'tempo-snippets
   :type '(choice (const :tag "Off" nil)
                  (const :tag "On" t)))
@@ -288,7 +295,10 @@ tempo-interactive set to nil."
     (overlay-put overlay 'intangible nil)
     (overlay-put overlay 'modification-hooks '(tempo-snippets-update))
     (overlay-put overlay 'insert-behind-hooks '(tempo-snippets-update))
-    (overlay-put overlay 'insert-in-front-hooks '(tempo-snippets-update))
+    (overlay-put overlay 'insert-in-front-hooks
+                 (if tempo-snippets-grow-in-front
+                     '(tempo-snippets-update)
+                   '(tempo-snippets-dont-grow-overlay)))
     (let ((inhibit-modification-hooks t))
       (delete-region end (overlay-end overlay))
       (tempo-snippets-update overlay t beg end nil))))
