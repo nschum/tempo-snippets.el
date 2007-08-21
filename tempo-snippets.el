@@ -73,6 +73,7 @@
 ;;    Fixed documentation.
 ;;    Prevented crash when form returns nil.
 ;;    Added `tempo-snippets-grow-in-front' option.
+;;    Proper clean-up of `tempo-marks'
 ;;
 ;; 2007-08-21 (0.1)
 ;;    Initial release.
@@ -146,6 +147,7 @@ tempo-interactive set to nil."
 (defun tempo-snippets-clear-all ()
   "Clear all tempo-snippet overlays."
   (interactive)
+  (kill-local-variable 'tempo-marks)
   (dolist (s tempo-snippets-sources)
     (tempo-snippets-finish-source s))
   (dolist (f tempo-snippets-forms)
