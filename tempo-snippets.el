@@ -64,18 +64,14 @@
 ;;     > "_" (s var) " = value;\n" "}" > n))
 ;;
 ;; Note the forms in the second example.  It calls `upcase-initials' every time
-;; you change the first variable name.  Causing side effects with functions like
-;; `backward-delete-char' would be undefined.  Also all text changes have to be
-;; done behind the point.
-;;
-;; (progn (insert "foo") (backward-delete-char 2))
-;; is okay.
-;;
-;; (progn (insert "foo") (backward-delete-char 4))
-;; is undefined!
+;; you change the first variable name.
 ;;
 ;;
 ;;; Change Log:
+;;
+;; 2007-08-21 (0.1.1)
+;;    Fixed documentation.
+;;    Prevented crash when form returns nil.
 ;;
 ;; 2007-08-21 (0.1)
 ;;    Initial release.
@@ -130,10 +126,11 @@ tempo-interactive set to nil."
   (when (overlay-buffer overlay)
     (save-excursion
       (let ((beg (overlay-start overlay))
-            (inhibit-modification-hooks))
+            (inhibit-modification-hooks t))
         (goto-char beg)
         (delete-char (- (overlay-end overlay) beg))
-        (insert text)
+        (when text
+          (insert text))
         (move-overlay overlay beg (point))))))
 
 ;;; clearing ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -238,7 +235,7 @@ tempo-interactive set to nil."
         (setq tempo-snippets-forms (delq ov tempo-snippets-forms))))))
 
 (defun tempo-snippets-insert-form (form)
-  "Insert a automatically re-evaluating snippet form at point."
+  "Insert an automatically re-evaluating snippet form at point."
   (let (overlay eval-result lookup-used)
     ;; FIXME: check for handlers
     (flet ((tempo-lookup-named (name)
@@ -289,7 +286,6 @@ tempo-interactive set to nil."
   "Called when a snippet input prompt is modified."
   (when after-p
     (overlay-put overlay 'intangible nil)
-    (overlay-put overlay 'insert-in-front-hooks nil)
     (overlay-put overlay 'modification-hooks '(tempo-snippets-update))
     (overlay-put overlay 'insert-behind-hooks '(tempo-snippets-update))
     (overlay-put overlay 'insert-in-front-hooks '(tempo-snippets-update))
@@ -454,7 +450,8 @@ will prompt for input right in the buffer instead of the minibuffer."
   (incf tempo-snippets-instance-counter)
   (let ((tempo-user-elements '((lambda (element)
                                  (tempo-snippets-insert-form element))))
-        (tempo-interactive tempo-snippets-interactive))
+        (tempo-interactive tempo-snippets-interactive)
+        (inhibit-modification-hooks t))
     (flet ((tempo-insert-named (name) (tempo-snippets-insert-mirror name))
            (tempo-insert-prompt (a &optional b c)
                                 (tempo-snippets-insert-prompt a b c)))
