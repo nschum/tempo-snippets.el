@@ -74,6 +74,7 @@
 ;;    Prevented crash when form returns nil.
 ;;    Added `tempo-snippets-grow-in-front' option.
 ;;    Proper clean-up of `tempo-marks'
+;;    Don't jump when first prompt is at point.
 ;;
 ;; 2007-08-21 (0.1)
 ;;    Initial release.
@@ -470,8 +471,16 @@ will prompt for input right in the buffer instead of the minibuffer."
       (if (not tempo-interactive)
           (tempo-insert-template template on-region)
         (save-excursion (tempo-insert-template template on-region))
-        (tempo-snippets-next-field)
-        ))))
+        (let ((overlays (overlays-at (point)))
+              match)
+          (while overlays
+            (when (overlay-get (pop overlays) 'tempo-snippets-save-name)
+              (setq overlays nil
+                    match t)))
+          (unless match
+            (tempo-forward-mark))
+          ;; return t so abbrevs don't insert space
+          t)))))
 
 (provide 'tempo-snippets)
 ;;; tempo-snippets.el ends here
