@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.1
+;; Version: 0.1.1
 ;; Keywords: abbrev convenience
 ;; URL: http://nschum.de/src/emacs/tempo-snippets/
 ;; Compatibility: GNU Emacs 22.2
