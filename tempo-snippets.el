@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Keywords: abbrev convenience
 ;; URL: http://nschum.de/src/emacs/tempo-snippets/
 ;; Compatibility: GNU Emacs 22.2
@@ -68,6 +68,9 @@
 ;;
 ;;
 ;;; Change Log:
+;;
+;; 2007-08-23 (0.1.2)
+;;    Added `tempo-snippets-complete-tag'.
 ;;
 ;; 2007-08-21 (0.1.1)
 ;;    Fixed documentation.
@@ -481,6 +484,31 @@ will prompt for input right in the buffer instead of the minibuffer."
             (tempo-forward-mark))
           ;; return t so abbrevs don't insert space
           t)))))
+
+;;;###autoload
+(defun tempo-snippets-complete-tag (&optional silent)
+  "`tempo-snippets' version of `tempo-complete-tag.'"
+  ;; unfortunately this is a code clone of the original
+  ;; we can't use flet, because that would cause an infinite recursion
+  (interactive "*")
+  (let* ((collection (tempo-build-collection))
+	 (match-info (tempo-find-match-string tempo-match-finder))
+	 (match-string (car match-info))
+	 (match-start (cdr match-info))
+	 (exact (assoc match-string collection))
+	 (compl (or (car exact)
+		    (and match-info (try-completion match-string collection)))))
+    (if compl (delete-region match-start (point)))
+    (cond ((null match-info) (or silent (ding)))
+	  ((null compl) (or silent (ding)))
+	  ((eq compl t) (funcall (cdr (assoc match-string collection))))
+	  (t (if (setq exact (assoc compl collection))
+		 (funcall (cdr exact))
+	       (insert compl)
+	       (or silent (ding))
+	       (if tempo-show-completion-buffer
+		   (tempo-display-completions match-string
+					      collection)))))))
 
 (provide 'tempo-snippets)
 ;;; tempo-snippets.el ends here
