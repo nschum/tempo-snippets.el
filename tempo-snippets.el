@@ -1,9 +1,9 @@
 ;;; tempo-snippets.el --- visual insertion of tempo templates
 ;;
-;; Copyright (C) 2007 Nikolaj Schumacher
+;; Copyright (C) 2007-2008 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.1.2
+;; Version: 0.1.3
 ;; Keywords: abbrev convenience
 ;; URL: http://nschum.de/src/emacs/tempo-snippets/
 ;; Compatibility: GNU Emacs 22.2
@@ -68,6 +68,9 @@
 ;;
 ;;
 ;;; Change Log:
+;;
+;; 2008-02-27 (0.1.3)
+;;    Added support for `tempo-save-named'.
 ;;
 ;; 2007-08-23 (0.1.2)
 ;;    Added `tempo-snippets-complete-tag'.
@@ -253,7 +256,10 @@ tempo-interactive set to nil."
     ;; FIXME: check for handlers
     (flet ((tempo-lookup-named (name)
               (setq lookup-used t)
-              (tempo-snippets-overlay-text (tempo-snippets-find-source name))))
+              ;; Get value from `tempo-save-named' or snippet source
+              (or (cdr (assq name tempo-named-insertions))
+                  (tempo-snippets-overlay-text
+                   (tempo-snippets-find-source name)))))
       (setq eval-result (eval form)))
     (if lookup-used
       (let ((beg (point)))
@@ -285,7 +291,6 @@ tempo-interactive set to nil."
       (if (> r 1)
           ;; delete overlay and mirrors
           (tempo-snippets-finish-source ov)
-          nil
         ;; let's be nice and give back a prompt
         (tempo-snippets-set-overlay-text
          ov (overlay-get ov 'tempo-snippets-prompt))
@@ -355,20 +360,24 @@ tempo-interactive set to nil."
 
 (defun tempo-snippets-insert-mirror (save-name)
   "Insert another instance of a snippet variable at point."
-  (let ((beg (point))
-        (source (tempo-snippets-find-source save-name))
-        overlay)
-    (when source
-      (insert (tempo-snippets-overlay-text source))
-      (setq overlay (make-overlay beg (point)))
-      (let ((mirrors (overlay-get source 'tempo-snippets-mirrors)))
-        (push overlay mirrors)
-        (overlay-put source 'tempo-snippets-mirrors mirrors))
-      (overlay-put overlay 'face 'tempo-snippets-auto-face)
-      (overlay-put overlay 'modification-hooks
-                   '(tempo-snippets-delete-overlay))
-      (overlay-put overlay 'insert-in-front-hooks
-                   '(tempo-snippets-dont-grow-overlay)))))
+  (let ((saved (cdr (assq name tempo-named-insertions))))
+    (if saved
+        ;; static saved value found, no need to mirror
+        (insert saved)
+      (let ((beg (point))
+            (source (tempo-snippets-find-source save-name))
+            overlay)
+        (when source
+          (insert (tempo-snippets-overlay-text source))
+          (setq overlay (make-overlay beg (point)))
+          (let ((mirrors (overlay-get source 'tempo-snippets-mirrors)))
+            (push overlay mirrors)
+            (overlay-put source 'tempo-snippets-mirrors mirrors))
+          (overlay-put overlay 'face 'tempo-snippets-auto-face)
+          (overlay-put overlay 'modification-hooks
+                       '(tempo-snippets-delete-overlay))
+          (overlay-put overlay 'insert-in-front-hooks
+                       '(tempo-snippets-dont-grow-overlay)))))))
 
 ;;; navigation ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
