@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007-2008 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.1.3
+;; Version: 0.1.4
 ;; Keywords: abbrev convenience
 ;; URL: http://nschum.de/src/emacs/tempo-snippets/
 ;; Compatibility: GNU Emacs 22.2
@@ -32,7 +32,7 @@
 ;;
 ;; http://lists.gnu.org/archive/html/emacs-devel/2007-08/msg00303.html
 ;;
-;; Currently that's CVS Emacs only!
+;; It will only work correctly in Emacs 22.2 and later!
 ;;
 ;;
 ;; Add the following to your .emacs file:
@@ -66,8 +66,16 @@
 ;; Note the forms in the second example.  It calls `upcase-initials' every time
 ;; you change the first variable name.
 ;;
+;; You can navigate between input forms with `tempo-snippets-next-field' and
+;; `tempo-snippets-previous-field'.  When the point is on an input field, those
+;; commands are bound to M-n and M-p by default.  You can use
+;; `tempo-snippets-keymap' to bind keys for input fields.
+;;
 ;;
 ;;; Change Log:
+;;
+;; 2008-03-21 (0.1.4)
+;;    Added `tempo-snippets-keymap'.
 ;;
 ;; 2008-02-27 (0.1.3)
 ;;    Added support for `tempo-save-named'.
@@ -128,6 +136,13 @@ tempo-interactive set to nil."
   :group 'tempo-snippets
   :type '(choice (const :tag "Off" nil)
                  (const :tag "On" t)))
+
+(defvar tempo-snippets-keymap
+  (let ((keymap (make-sparse-keymap)))
+    (define-key keymap "\M-n" 'tempo-snippets-next-field)
+    (define-key keymap "\M-p" 'tempo-snippets-previous-field)
+    keymap)
+  "*Keymap used for tempo-nippets input fields.")
 
 ;;; tools ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -214,6 +229,8 @@ tempo-interactive set to nil."
 
 (defun tempo-snippets-finish-source (overlay)
   "Clear OVERLAY and its mirrors."
+  (let ((o (overlay-get overlay 'tempo-snippets-keymap-overlay)))
+    (when o (delete-overlay o)))
   (dolist (o (overlay-get overlay 'tempo-snippets-mirrors))
     (delete-overlay o))
   (delete-overlay overlay)
@@ -292,6 +309,8 @@ tempo-interactive set to nil."
           ;; delete overlay and mirrors
           (tempo-snippets-finish-source ov)
         ;; let's be nice and give back a prompt
+        (let ((o (overlay-get ov 'tempo-snippets-keymap-overlay)))
+          (when o (delete-overlay o)))
         (tempo-snippets-set-overlay-text
          ov (overlay-get ov 'tempo-snippets-prompt))
         (tempo-snippets-propagate-source ov)
@@ -312,7 +331,12 @@ tempo-interactive set to nil."
                    '(tempo-snippets-dont-grow-overlay)))
     (let ((inhibit-modification-hooks t))
       (delete-region end (overlay-end overlay))
-      (tempo-snippets-update overlay t beg end nil))))
+      (tempo-snippets-update overlay t beg end nil))
+    ;; keymap overlay for the 1 character behind the input
+    (let ((keymap-overlay (make-overlay end (1+ end))))
+      (overlay-put keymap-overlay 'evaporate t)
+      (overlay-put keymap-overlay 'keymap tempo-snippets-keymap)
+      (overlay-put overlay 'tempo-snippets-keymap-overlay keymap-overlay))))
 
 ;; Stores removed text for `tempo-snippets-delete-overlay'.
 ;; We need this, because fontification will call modification hooks, and we want
@@ -354,6 +378,7 @@ tempo-interactive set to nil."
     (overlay-put overlay 'modification-hooks '(tempo-snippets-update))
     (overlay-put overlay 'insert-in-front-hooks '(tempo-snippets-replace))
     (overlay-put overlay 'tempo-snippets-source t)
+    (overlay-put overlay 'keymap tempo-snippets-keymap)
     (push overlay tempo-snippets-sources)
     (tempo-snippets-propagate-source overlay)
     ))
