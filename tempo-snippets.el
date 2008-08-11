@@ -3,7 +3,7 @@
 ;; Copyright (C) 2007-2008 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.1.4
+;; Version: 0.1.5
 ;; Keywords: abbrev convenience
 ;; URL: http://nschum.de/src/emacs/tempo-snippets/
 ;; Compatibility: GNU Emacs 22.2
@@ -71,8 +71,14 @@
 ;; commands are bound to M-n and M-p by default.  You can use
 ;; `tempo-snippets-keymap' to bind keys for input fields.
 ;;
+;; If you want to add a snippet to your abbrev table, you can do
+;; M-x tempo-snippets-add-mode-abbrev or M-x tempo-snippets-add-global-abbrev.
+;;
 ;;
 ;;; Change Log:
+;;
+;; 2008-08-11 (0.1.5)
+;;    Added functions for interactive definition of snippet abbrevs.
 ;;
 ;; 2008-03-21 (0.1.4)
 ;;    Added `tempo-snippets-keymap'.
@@ -543,6 +549,18 @@ will prompt for input right in the buffer instead of the minibuffer."
 	       (if tempo-show-completion-buffer
 		   (tempo-display-completions match-string
 					      collection)))))))
+
+;;; convenience commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun tempo-snippets-add-mode-abbrev (snippet abbrev)
+  "Helper for defining a mode-local abbrev for a snippet."
+  (interactive "aTemplate: \nsLocal abbrev: ")
+  (define-abbrev local-abbrev-table abbrev "" snippet))
+
+(defun tempo-snippets-add-global-abbrev (snippet abbrev)
+  "Helper for defining a mode-local abbrev for a snippet."
+  (interactive "aTemplate: \nsGlobal abbrev: ")
+  (define-abbrev global-abbrev-table abbrev "" snippet))
 
 (provide 'tempo-snippets)
 ;;; tempo-snippets.el ends here
