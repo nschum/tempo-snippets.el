@@ -181,7 +181,6 @@ tempo-interactive set to nil."
 
 ;;; clearing ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;###autoload
 (defun tempo-snippets-clear-all ()
   "Clear all tempo-snippet overlays."
   (interactive)
@@ -202,7 +201,6 @@ tempo-interactive set to nil."
       (delete-overlay f)
       (setq tempo-snippets-forms (delq f tempo-snippets-forms)))))
 
-;;;###autoload
 (defun tempo-snippets-clear-oldest ()
   "Clear the oldest tempo-snippet overlays."
   (interactive)
@@ -212,7 +210,6 @@ tempo-interactive set to nil."
                          (car (overlay-get s 'tempo-snippets-save-name)))))
     (tempo-snippets-clear minimum)))
 
-;;;###autoload
 (defun tempo-snippets-clear-latest ()
   "Clear the latest tempo-snippet overlays."
   (interactive)
@@ -425,7 +422,6 @@ tempo-interactive set to nil."
     (when result
       (overlay-start result))))
 
-;;;###autoload
 (defun tempo-snippets-previous-field (&optional arg)
   "Jump to the previous editable tempo-snippet field.
 You can also use `tempo-forward-mark', which will include more points of
@@ -444,7 +440,6 @@ interest."
     (push-mark)
     (goto-char max-start)))
 
-;;;###autoload
 (defun tempo-snippets-next-field (&optional arg)
   "Jump to the next editable tempo-snippet field.
 You can also use `tempo-backward-mark', which will include more points of
@@ -498,7 +493,6 @@ will prompt for input right in the buffer instead of the minibuffer."
     command-name))
 (put 'tempo-define-snippet 'lisp-indent-function 1)
 
-;;;###autoload
 (defun tempo-snippets-insert-template (template on-region)
   "`tempo-snippets' version of `tempo-insert-template.'"
   (incf tempo-snippets-instance-counter)
@@ -523,7 +517,6 @@ will prompt for input right in the buffer instead of the minibuffer."
           ;; return t so abbrevs don't insert space
           t)))))
 
-;;;###autoload
 (defun tempo-snippets-complete-tag (&optional silent)
   "`tempo-snippets' version of `tempo-complete-tag.'"
   ;; unfortunately this is a code clone of the original
