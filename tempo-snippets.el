@@ -36,7 +36,9 @@
 ;;
 ;;
 ;; Add the following to your .emacs file:
-;; (require 'tempo-snippets)
+;;
+;; (add-to-list 'load-path "/path/to/tempo-snippets/")
+;; (autoload 'tempo-define-snippet "tempo-snippets")
 ;;
 ;; Then use `tempo-define-snippet' instead of `tempo-define-template'.  The
 ;; arguments can remain the same.  Insertion works like for any tempo-template
