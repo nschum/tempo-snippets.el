@@ -147,6 +147,19 @@ tempo-interactive set to nil."
     keymap)
   "*Keymap used for tempo-nippets input fields.")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar tempo-snippets-instance-counter 0
+  "Provides unique identifier for each snippet.")
+
+(defvar tempo-snippets-sources nil
+  "The list of snippet input fields.")
+(make-variable-buffer-local 'tempo-snippets-sources)
+
+(defvar tempo-snippets-forms nil
+  "The list of automatically re-evaluating snippet forms.")
+(make-variable-buffer-local 'tempo-snippets-forms)
+
 ;;; tools ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun tempo-snippets-overlay-text (overlay)
@@ -211,10 +224,6 @@ tempo-interactive set to nil."
 
 ;;; sources ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar tempo-snippets-sources nil
-  "The list of snippet input fields.")
-(make-variable-buffer-local 'tempo-snippets-sources)
-
 (defun tempo-snippets-find-source (save-name &optional instance)
   "Find an input field by name."
   (setq save-name (cons (or instance
@@ -252,10 +261,6 @@ tempo-interactive set to nil."
     (tempo-snippets-update-forms)))
 
 ;;; forms ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defvar tempo-snippets-forms nil
-  "The list of automatically re-evaluating snippet forms.")
-(make-variable-buffer-local 'tempo-snippets-forms)
 
 (defun tempo-snippets-update-forms ()
   "Re-evaluate all forms."
@@ -493,9 +498,6 @@ will prompt for input right in the buffer instead of the minibuffer."
 	 (tempo-add-tag tag template-name taglist))
     command-name))
 (put 'tempo-define-snippet 'lisp-indent-function 1)
-
-(defvar tempo-snippets-instance-counter 0
-  "Provides unique identifier for each snippet.")
 
 ;;;###autoload
 (defun tempo-snippets-insert-template (template on-region)
