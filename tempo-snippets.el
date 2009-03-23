@@ -104,9 +104,6 @@
 (require 'tempo)
 (eval-when-compile (require 'cl))
 
-(add-to-list 'debug-ignored-errors "^Beginning of buffer$")
-(add-to-list 'debug-ignored-errors "^End of buffer$")
-
 (defgroup tempo-snippets nil
   "Visual insertion of tempo templates."
   :group 'abbrev
