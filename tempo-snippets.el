@@ -6,7 +6,7 @@
 ;; Version: 0.1.5
 ;; Keywords: abbrev convenience
 ;; URL: http://nschum.de/src/emacs/tempo-snippets/
-;; Compatibility: GNU Emacs 22.2
+;; Compatibility: GNU Emacs 22.2, Emacs 23.x
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;
