@@ -481,21 +481,20 @@ interest."
   "`tempo-snippets' version of `tempo-define-template'.
 Use with the same arguments as `tempo-define-template'.  The resulting template
 will prompt for input right in the buffer instead of the minibuffer."
-  (let* ((template-name (intern (concat "tempo-template-"
-				       name)))
-	 (command-name template-name))
+  (let* ((template-name (intern (concat "tempo-template-" name)))
+         (command-name template-name))
     (set template-name elements)
     (fset command-name (list 'lambda (list '&optional 'arg)
-			     (or documentation
-				 (concat "Insert a " name "."))
-			     (list 'interactive "*P")
-			     (list 'tempo-snippets-insert-template
+                             (or documentation
+                                 (concat "Insert a " name "."))
+                             (list 'interactive "*P")
+                             (list 'tempo-snippets-insert-template
                                    (list 'quote template-name)
-				   (list 'if 'tempo-insert-region
-					 (list 'not 'arg) 'arg))))
+                                   (list 'if 'tempo-insert-region
+                                         (list 'not 'arg) 'arg))))
     (put command-name 'no-self-insert t)
     (and tag
-	 (tempo-add-tag tag template-name taglist))
+         (tempo-add-tag tag template-name taglist))
     command-name))
 (put 'tempo-define-snippet 'lisp-indent-function 1)
 
@@ -531,23 +530,23 @@ will prompt for input right in the buffer instead of the minibuffer."
   ;; we can't use flet, because that would cause an infinite recursion
   (interactive "*")
   (let* ((collection (tempo-build-collection))
-	 (match-info (tempo-find-match-string tempo-match-finder))
-	 (match-string (car match-info))
-	 (match-start (cdr match-info))
-	 (exact (assoc match-string collection))
-	 (compl (or (car exact)
-		    (and match-info (try-completion match-string collection)))))
+         (match-info (tempo-find-match-string tempo-match-finder))
+         (match-string (car match-info))
+         (match-start (cdr match-info))
+         (exact (assoc match-string collection))
+         (compl (or (car exact)
+                    (and match-info (try-completion match-string collection)))))
     (if compl (delete-region match-start (point)))
     (cond ((null match-info) (or silent (ding)))
-	  ((null compl) (or silent (ding)))
-	  ((eq compl t) (funcall (cdr (assoc match-string collection))))
-	  (t (if (setq exact (assoc compl collection))
-		 (funcall (cdr exact))
-	       (insert compl)
-	       (or silent (ding))
-	       (if tempo-show-completion-buffer
-		   (tempo-display-completions match-string
-					      collection)))))))
+          ((null compl) (or silent (ding)))
+          ((eq compl t) (funcall (cdr (assoc match-string collection))))
+          (t (if (setq exact (assoc compl collection))
+                 (funcall (cdr exact))
+               (insert compl)
+               (or silent (ding))
+               (if tempo-show-completion-buffer
+                   (tempo-display-completions match-string
+                                              collection)))))))
 
 ;;; convenience commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
