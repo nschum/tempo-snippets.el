@@ -44,6 +44,10 @@
 ;; arguments can remain the same.  Insertion works like for any tempo-template
 ;; with `tempo-template-your-template-name'.
 ;;
+;; You can replace all templates by snippets with the following line.
+;; Use with care!
+;; (defalias 'tempo-define-template 'tempo-define-snippet)
+;;
 ;; When adding lisp forms in your templates that use `tempo-lookup-named', make
 ;; sure they don't have side-effects, because they will be evaluated every time
 ;; the variables change.
