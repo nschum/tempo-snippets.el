@@ -379,7 +379,7 @@ tempo-interactive set to nil."
     (setq overlay (make-overlay beg (point)))
     (overlay-put overlay 'tempo-snippets-save-name
                  (cons tempo-snippets-instance-counter save-name))
-    (overlay-put overlay 'tempo-snippets-prompt text)
+    (overlay-put overlay 'tempo-snippets-prompt prompt)
     (overlay-put overlay 'face 'tempo-snippets-editable-face)
     (overlay-put overlay 'intangible t)
     (overlay-put overlay 'modification-hooks '(tempo-snippets-update))
