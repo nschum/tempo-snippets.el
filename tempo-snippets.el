@@ -374,12 +374,8 @@ tempo-interactive set to nil."
   "Insert a snippet prompt at point."
   (tempo-insert-mark (point-marker))
   (let ((beg (point))
-        (text (replace-regexp-in-string "[[:space:]]" "_"
-                                        (if (string-match "\\(.+\\): " prompt)
-                                            (match-string 1 prompt)
-                                          prompt)))
         overlay)
-    (insert text)
+    (insert prompt)
     (setq overlay (make-overlay beg (point)))
     (overlay-put overlay 'tempo-snippets-save-name
                  (cons tempo-snippets-instance-counter save-name))
